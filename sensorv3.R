@@ -1,10 +1,10 @@
   library(dplyr)
   library(ggplot2)
+  source("functions.R")
   
-  setwd("~/Desktop/demeter")
+  setwd("~/Demeter2")
   ###
   stopCluster(cl)
-  
   
   FWHM <- read.csv("FWHM.csv")
   ranges <- read.csv("ranges.csv")
@@ -126,15 +126,7 @@
   out <- split(fulldata , f = list(fulldata$con, fulldata$wave))
   #here we simulate a larger dataset with current data
   #Simulation function, make pdf of data then random pull from distribution
-  simfun <- function(data) {
-    pdf_of_data <- density(data)
-    
-    sim <- approx(cumsum(pdf_of_data$y) / sum(pdf_of_data$y),
-                  pdf_of_data$x,
-                  runif(simsize))$y
-    sim[is.na(sim)] <- mean(sim, na.rm = TRUE)
-    return(sim)
-  }
+
   #Simuate data
   s <- 1
   for (s in 1:length(out)) {
