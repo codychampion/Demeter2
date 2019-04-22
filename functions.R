@@ -1,3 +1,5 @@
+
+####Simulate data from a smaller dataset
 simfun <- function(data) {
   pdf_of_data <- density(data)
   
@@ -7,3 +9,6 @@ simfun <- function(data) {
   sim[is.na(sim)] <- mean(sim, na.rm = TRUE)
   return(sim)
 }
+
+
+

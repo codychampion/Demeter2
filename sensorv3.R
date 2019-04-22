@@ -1,8 +1,9 @@
   library(dplyr)
   library(ggplot2)
-  source("functions.R")
   
   setwd("~/Demeter2")
+  source("functions.R")
+  
   ###
   stopCluster(cl)
   
@@ -19,7 +20,7 @@
   simsize <- 250
   setwd('./csv_archive')
   files <- list.files()
-  conditions <- c('control', 'salt')
+  conditions <- c('control', 'salt', 'highGlyco', 'lowGlyco')
   #todo
   #sun reflex conversion
   ####################################3
@@ -31,41 +32,10 @@
     
     ######################################################################
     #White Section
-    w <- 1
-    #read white standard files and find
-    for (w in 1:length(white)) {
-      #read data and format into numeric data type and convert to wide format
-      wdata <-
-        read.csv(white[w], stringsAsFactors = FALSE)
-      wdata <- wdata[-1]
-      wdata[3] <- rep_len('white', nrow(wdata))
-      wdata[4] <- rep_len(w, nrow(wdata))
-      colnames(wdata) <- c('wave', 'val', 'con', 'rep')
-      #Clean up insterment quirks and normalize to total light recoreded
-      wdata <- tail(wdata, -163) #remove first 20 rows
-      if (min(wdata$val) < 0) {
-        wdata$val <- wdata$val + (-1 * min(wdata$val))
-      }
-      wdata$val <- wdata$val / max(wdata$val)
-      #conditonal loop data storage
-      if (w == 1) {
-        wfulldata <- wdata
-      }
-      if (w != 1) {
-        wfulldata <- rbind(wfulldata, wdata)
-      }
-    }
+
+    wfulldata <- dataformat(white)
     
-    #here we round wave lenght then combine the vals
-    wfulldata$wave <- round(wfulldata$wave)
-    
-    wfulldata <- wfulldata %>%
-      dplyr::group_by(wave, rep, con) %>%
-      dplyr::summarise(val = mean(val))
-    
-    wfulldata <- as.data.frame(wfulldata)
-    
-    
+  
     #Average all rwplicates
     wfulldata <- wfulldata %>%
       dplyr::group_by(wave) %>%
@@ -73,46 +43,9 @@
     
     wfulldata <- as.data.frame(wfulldata)
     
-    
     #######################################################################
-    #Data section
-    ii <- 1
-    #read in data files, normalize to highest insenty then normalize to white standard
-    for (ii in 1:length(current_condition)) {
-      #read data and format into numeric data type and convert to wide format
-      data <-
-        read.csv(current_condition[ii], stringsAsFactors = FALSE)
-      data <- data[-1]
-      data[3] <- rep_len(conditions[i], nrow(data))
-      data[4] <- rep_len(ii, nrow(data))
-      colnames(data) <- c('wave', 'val', 'con', 'rep')
-      #Clean up insterment quirks and normalize to total light recoreded
-      data <- tail(data, -163) #remove first 20 rows
-      if (min(data$val) < 0) {
-        data$val <- data$val + (-1 * min(data$val))
-      }
-      data$val <- data$val / max(data$val)
-      data$val <- data$val / wfulldata$ave
-      #conditonal loop data storage
-      if (i == 1 & ii == 1) {
-        fulldata <- data
-      }
-      if (ii != 1) {
-        fulldata <- rbind(fulldata, data)
-      }
-      
-      #here we round wave lenght then combine the vals
-      fulldata$wave <- round(fulldata$wave)
-      
-      fulldata <- fulldata %>%
-        dplyr::group_by(wave, rep, con) %>%
-        dplyr::summarise(val = mean(val))
-      
-      fulldata <- as.data.frame(fulldata)
-      
-      
-    }
-    
+  fulldata <- dataformat(current_condition)
+
   }
   
   #Sanity check
@@ -148,8 +81,8 @@
     if (s != 1) {
       data_out <- rbind(data_out, sim_data)
     }
-    print(s / length(out))
     
+    pb$tick()    
     
   }
   fulldata <- data_out
@@ -188,27 +121,18 @@
   
   ##########################################################################
   #Sanity check, raw data
-  r1 <-
-    ggplot(final, aes(x = wave, y = red, colour = con)) + geom_smooth() + ggtitle("red")
-  r2 <-
-    ggplot(final, aes(x = wave, y = red, colour = con)) + geom_line() + ggtitle("red")
+  #r1 <- ggplot(final, aes(x = wave, y = red, colour = con)) + geom_smooth() + ggtitle("red")
+  #r2 <- ggplot(final, aes(x = wave, y = red, colour = con)) + geom_line() + ggtitle("red")
   
-  b1 <-
-    ggplot(final, aes(x = wave, y = blue, colour = con)) + geom_smooth() + ggtitle("blue")
-  b2 <-
-    ggplot(final, aes(x = wave, y = blue, colour = con)) + geom_line() + ggtitle("blue")
+  #b1 <- ggplot(final, aes(x = wave, y = blue, colour = con)) + geom_smooth() + ggtitle("blue")
+  #b2 <- ggplot(final, aes(x = wave, y = blue, colour = con)) + geom_line() + ggtitle("blue")
   
-  g1 <-
-    ggplot(final, aes(x = wave, y = green, colour = con)) + geom_smooth() + ggtitle("green")
-  g2 <-
-    ggplot(final, aes(x = wave, y = green, colour = con)) + geom_line() + ggtitle("green")
-  
-  #can plot 
+  #g1 <- ggplot(final, aes(x = wave, y = green, colour = con)) + geom_smooth() + ggtitle("green")
+  #g2 <- ggplot(final, aes(x = wave, y = green, colour = con)) + geom_line() + ggtitle("green")
+
   #library(gridExtra)
   
   #gridExtra::grid.arrange(r1, r2, b1, b2, g1, g2, nrow = 3)
-  
-  
   
   #clean up unneed datasets
   rm(data_out, out, sim_data, tmp, data)
