@@ -11,22 +11,21 @@ This repository has been superseded by the canonical Demeter repository:
 The useful `Demeter2` sensor/filter optimization work has been folded into `codychampion/demeter` under:
 
 ```text
-sensor-optimization/
+sensor-optimization/legacy/d2/
 ```
 
 ## Why this repo remains
 
-`Demeter2` is preserved as a historical source archive for the original sensor optimization experiment. The cleaned public-release version now lives in the canonical Demeter repo alongside the TerraRef / hyperspectral plant phenotyping work.
+`Demeter2` is preserved as a historical source archive for the original sensor optimization experiment. The canonical Demeter repo now contains the complete research line: TerraRef / hyperspectral plant phenotyping, cleaned sensor-optimization scripts, and the imported legacy snapshots.
 
 ## What moved
 
 | Original concept | New location |
 |---|---|
 | Sensor/filter optimization workflow | `codychampion/demeter/sensor-optimization/` |
-| `functions.R` simulation helper | `codychampion/demeter/sensor-optimization/R/simulate.R` |
-| `sensorv3.R` workflow skeleton | `codychampion/demeter/sensor-optimization/R/sensor_optimization.R` |
-| Required data notes | `codychampion/demeter/sensor-optimization/data/README.md` |
+| Full original `Demeter2` snapshot | `codychampion/demeter/sensor-optimization/legacy/d2/` |
+| `sensordevlopment` snapshot | `codychampion/demeter/sensor-optimization/legacy/sd/` |
 
 ## Status
 
-This repo should not be featured on the GitHub profile. Once `codychampion/demeter` is public and the redirect has been verified, this repository can be archived.
+This repo should not be featured directly. Start with `codychampion/demeter` for the coherent research archive.
